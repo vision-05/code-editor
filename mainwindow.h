@@ -24,6 +24,7 @@
 #include <vector>
 #include <QKeyEvent>
 
+//make sure to add installer to set path for save data
 //add modified QSyntaxHighlighter class and also numbered lines
 //after all functionality implemented, make multitasking, then create windows compatible
 
