@@ -22,8 +22,10 @@ SOURCES += \
 HEADERS += \
     mainwindow.h
 
-FORMS += \
-    mainwindow.ui
+FORMS +=
+
+QT += webengine
+QT += webenginewidgets
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
