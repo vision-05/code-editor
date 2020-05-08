@@ -22,7 +22,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h
 
-FORMS +=
+FORMS += \
+    mainwindow.ui
 
 QT += webengine
 QT += webenginewidgets

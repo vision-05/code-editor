@@ -320,16 +320,16 @@ void MainWindow::createActions() {
 }
 
 void MainWindow::createMenus() {
-    options = menuBar()->addMenu(tr("& Options"));
+    options = menuBar()->addMenu(tr("&Options"));
     options->addAction(settingsAct);
 
-    file = menuBar()->addMenu(tr("& File"));
+    file = menuBar()->addMenu(tr("&File"));
     file->addAction(newAct);
     file->addAction(openAct);
     file->addAction(saveAct);
     file->addAction(saveAsAct);
 
-    edit = menuBar()->addMenu(tr(" &Edit"));
+    edit = menuBar()->addMenu(tr("&Edit"));
     edit->addAction(undoAct);
     edit->addAction(redoAct);
     edit->addSeparator();
@@ -341,9 +341,9 @@ void MainWindow::createMenus() {
     edit->addAction(italicAct);
     edit->addAction(underlineAct);
 
-    background = menuBar()->addMenu(tr("& Themes"));
-    lightMode = background->addMenu(tr("& Light"));
-    darkMode = background->addMenu(tr("& Dark"));
+    background = menuBar()->addMenu(tr("&Themes"));
+    lightMode = background->addMenu(tr("&Light"));
+    darkMode = background->addMenu(tr("&Dark"));
     darkMode->addAction(plainDark);
     darkMode->addAction(twilightDark);
     darkMode->addAction(pastelDark);
