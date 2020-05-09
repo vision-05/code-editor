@@ -65,6 +65,8 @@ private slots:
     void closeTab(int index);
     void newTab();
 
+    void closeEditor(int index);
+
 private:
     void createActions();
     void createMenus();
@@ -100,5 +102,14 @@ private:
 
     QWebEngineView* first = new QWebEngineView;
     std::vector<QWebEngineView*> windows {first};
+
+    QTextEdit* textEdit = new QTextEdit;
+    std::vector<QTextEdit*> edits {textEdit};
+    std::vector<QString> paths {filePath};
+
+    SyntaxHighlighter* highlighter;
+
+    QFont mainfont;
+    const int tabStop = 4;
 };
 #endif // MAINWINDOW_H

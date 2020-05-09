@@ -23,12 +23,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->removeTab(0);
     ui->tabWidget->addTab(first, tr("New Tab"));
 
+    ui->tabWidget_2->setTabsClosable(true);
+    ui->tabWidget_2->removeTab(0);
+    ui->tabWidget_2->removeTab(0);
+    ui->tabWidget_2->addTab(textEdit, tr("Untitled"));
+
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, [=]() {
         MainWindow::search(ui->tabWidget->currentIndex());
     });
 
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, [=]() {
         MainWindow::closeTab(ui->tabWidget->currentIndex());
+    });
+
+    connect(ui->tabWidget_2, &QTabWidget::tabCloseRequested, this, [=]() {
+        MainWindow::closeEditor(ui->tabWidget_2->currentIndex());
     });
 
     connect(ui->newTabButton, &QPushButton::released, this, &MainWindow::newTab);
@@ -41,19 +50,16 @@ MainWindow::MainWindow(QWidget *parent)
     setMinimumSize(160, 160);
     resize(1000, 610);
 
-    QFont font;
-    font.setFamily("Arial");
-    font.setStyleHint(QFont::Monospace);
-    font.setFixedPitch(true);
-    font.setPointSize(14);
-    ui->textEdit->setFont(font);
+    mainfont.setFamily("Arial");
+    mainfont.setStyleHint(QFont::Monospace);
+    mainfont.setFixedPitch(true);
+    mainfont.setPointSize(14);
+    edits[0]->setFont(mainfont);
 
-    const int tabStop = 4;  // 4 characters
+    QFontMetrics metrics(mainfont);
+    edits[0]->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
 
-    QFontMetrics metrics(font);
-    ui->textEdit->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
-
-    SyntaxHighlighter* highlighter = new SyntaxHighlighter(ui->textEdit->document());
+    highlighter = new SyntaxHighlighter(edits[0]->document());
 
     //SAVE DATA
 
@@ -106,13 +112,13 @@ void MainWindow::openSettings() {
 }
 
 void MainWindow::save() {
-    QFile file(filePath);
+    QFile file(paths[ui->tabWidget_2->currentIndex()]);
     if(!file.open(QFile::WriteOnly | QFile::Text)) { //if the file doesn't exist or there is no path in memory
         MainWindow::saveAs(); //save file as
         return;
     }
     QTextStream out(&file);
-    QString text = ui->textEdit->toHtml();
+    QString text = edits[ui->tabWidget_2->currentIndex()]->toHtml();
     out << text;
     file.flush();
     file.close();
@@ -121,13 +127,13 @@ void MainWindow::save() {
 void MainWindow::saveAs() {
     QString fileName = QFileDialog::getSaveFileName(this, "Open the file"); //get file through input
     QFile file(fileName);
-    filePath = fileName; //make the current path in memory the path of the new file
+    paths[ui->tabWidget_2->currentIndex()] = fileName; //make the current path in memory the path of the new file
     if(!file.open(QFile::WriteOnly | QFile::Text)) { //make sure the file is writeable or open
         QMessageBox::warning(this, "..", "file not open");
         return;
     }
     QTextStream out(&file);
-    QString text = ui->textEdit->toHtml(); //convert text to html code
+    QString text = edits[ui->tabWidget_2->currentIndex()]->toHtml(); //convert text to html code
     out << text; //output the text
     file.flush();
     file.close();
@@ -137,21 +143,49 @@ void MainWindow::saveAs() {
 void MainWindow::open() {
     QString fileName = QFileDialog::getOpenFileName(this, "Open the file"); //user input for file and location
     QFile file(fileName); //create a file with the name
-    filePath = fileName;
+    paths.push_back(fileName); //add the filepath to the vector of paths
+
     if(!file.open(QFile::ReadOnly | QFile::Text)) { //make sure the file is readable and exists
         QMessageBox::warning(this, "..", "file not open");
         return;
     }
+
     QTextStream in(&file); //read text using stream
     QString text = in.readAll();
-    ui->textEdit->setText(text);
     file.close();
+
+    edits.push_back(new QTextEdit); //create new text edit
+    ui->tabWidget_2->addTab(edits[ui->tabWidget_2->count()], tr("tab1")); //create a new tab with that edit
+    ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count() - 1); //set current tab
+    edits[ui->tabWidget_2->currentIndex()]->setText(text); //set the textedit to the text of the file opened
+
+    edits[ui->tabWidget_2->currentIndex()]->setFont(mainfont);
+
+    QFontMetrics metrics(mainfont);
+    edits[ui->tabWidget_2->currentIndex()]->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
+
+    highlighter = new SyntaxHighlighter(edits[ui->tabWidget_2->currentIndex()]->document()); //set the highlighter to the document
+
+    //shrink tabs if more than 6
+
     this->setWindowTitle(fileName);
 }
 
 void MainWindow::newFile() {
-    filePath = "";
+    paths.push_back(tr("")); //add a new path
+    edits.push_back(new QTextEdit); //add a new text edit
+    ui->tabWidget_2->addTab(edits[ui->tabWidget_2->count()], tr("Untitled")); //add tab
+    ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count() - 1); //set current tab to new
+
+    edits[ui->tabWidget_2->currentIndex()]->setFont(mainfont);
+
+    QFontMetrics metrics(mainfont);
+    edits[ui->tabWidget_2->currentIndex()]->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
+
+    highlighter = new SyntaxHighlighter(edits[ui->tabWidget_2->currentIndex()]->document()); //set highlighter to current doc
     this->setWindowTitle(tr("Untitled_1"));
+
+    //shrink tabs if more than 6
 }
 
 void MainWindow::cut() {
@@ -245,6 +279,14 @@ void MainWindow::newTab() {
     int nextIndex = ui->tabWidget->count();
     ui->tabWidget->addTab(windows[nextIndex],tr("New Tab"));
 
+}
+
+//CODE EDITOR
+
+void MainWindow::closeEditor(int index) {
+    paths.erase(paths.begin() + index);
+    edits.erase(edits.begin() + index);
+    ui->tabWidget_2->removeTab(index);
 }
 
 //PRIVATE
