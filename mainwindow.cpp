@@ -41,7 +41,23 @@ MainWindow::MainWindow(QWidget *parent)
     setMinimumSize(160, 160);
     resize(1000, 610);
 
-    QString data[5] = {"1","2","3","4","5"};
+    QFont font;
+    font.setFamily("Arial");
+    font.setStyleHint(QFont::Monospace);
+    font.setFixedPitch(true);
+    font.setPointSize(14);
+    ui->textEdit->setFont(font);
+
+    const int tabStop = 4;  // 4 characters
+
+    QFontMetrics metrics(font);
+    ui->textEdit->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
+
+    SyntaxHighlighter* highlighter = new SyntaxHighlighter(ui->textEdit->document());
+
+    //SAVE DATA
+
+    QString data[3] = {"1","2","3"};
 
     QFile file(tr("/Users/tim/Desktop/saveData.sad"));
     if(!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -53,18 +69,12 @@ MainWindow::MainWindow(QWidget *parent)
     file.close();
 
     if(saveData == data[0]) {
-        lightPlain();
-    }
-    else if(saveData == data[1]) {
-        lightPastel();
-    }
-    else if(saveData == data[2]) {
         darkPlain();
     }
-    else if(saveData == data[3]) {
+    else if(saveData == data[1]) {
         darkTwilight();
     }
-    else if(saveData == data[4]) {
+    else if(saveData == data[2]) {
         darkPastel();
     }
     else {
@@ -156,33 +166,6 @@ void MainWindow::paste() {
     ui->textEdit->paste();
 }
 
-void MainWindow::bold() {
-    if(!ui->textEdit->fontWeight() || ui->textEdit->fontWeight() < 99) { //font weight 99 is bold
-        ui->textEdit->setFontWeight(99);
-    }
-    else {
-        ui->textEdit->setFontWeight(0); //font weight 0 is thin
-    }
-}
-
-void MainWindow::underline() {
-    if(!ui->textEdit->fontUnderline()) {
-        ui->textEdit->setFontUnderline(true);
-    }
-    else {
-        ui->textEdit->setFontUnderline(false);
-    }
-}
-
-void MainWindow::italic() {
-    if(!ui->textEdit->fontItalic()) {
-        ui->textEdit->setFontItalic(true);
-    }
-    else {
-        ui->textEdit->setFontItalic(false);
-    }
-}
-
 void MainWindow::undo() {
     ui->textEdit->undo();
 }
@@ -195,27 +178,17 @@ void MainWindow::redo() {
 
 void MainWindow::darkPlain() {
     this->setStyleSheet("background-color: DimGray; color: white");
-    saveData = "3";
+    saveData = "1";
 }
 
 void MainWindow::darkTwilight() {
     this->setStyleSheet("background-color: DarkSlateBlue; color: LightSteelBlue");
-    saveData = "4";
+    saveData = "2";
 }
 
 void MainWindow::darkPastel() {
     this->setStyleSheet("background-color: DarkSlateGray; color: MediumAquaMarine");
-    saveData = "5";
-}
-
-void MainWindow::lightPlain() {
-    this->setStyleSheet("background-color: white; color: black");
-    saveData = "2";
-}
-
-void MainWindow::lightPastel() {
-    this->setStyleSheet("background-color: white; color: LightBlue");
-    saveData = "1";
+    saveData = "3";
 }
 
 //CODE
@@ -278,31 +251,28 @@ void MainWindow::newTab() {
 
 void MainWindow::createActions() {
 
-    QAction* nonShortcutActions[6] {plainDark,pastelDark,twilightDark,plainLight,pastelLight,settingsAct};
+    QAction* nonShortcutActions[4] {plainDark,pastelDark,twilightDark,settingsAct};
 
-    QAction* shortcutActions[12] {openAct,newAct,saveAct,saveAsAct,cutAct,copyAct,pasteAct,redoAct,undoAct,boldAct,
-                                italicAct,underlineAct};
+    QAction* shortcutActions[9] {openAct,newAct,saveAct,saveAsAct,cutAct,copyAct,pasteAct,redoAct,undoAct};
 
-    QKeySequence shortcuts[12] {QKeySequence::Open,QKeySequence::New,QKeySequence::Save,QKeySequence::SaveAs,
+    QKeySequence shortcuts[9] {QKeySequence::Open,QKeySequence::New,QKeySequence::Save,QKeySequence::SaveAs,
                               QKeySequence::Cut,QKeySequence::Copy,QKeySequence::Paste,QKeySequence::Redo,
-                              QKeySequence::Undo,QKeySequence::Bold,QKeySequence::Italic,QKeySequence::Underline};
+                              QKeySequence::Undo};
 
-    void (MainWindow::*shortcutSlotFunction[12])() {&MainWindow::open,&MainWindow::newFile,&MainWindow::save,
+    void (MainWindow::*shortcutSlotFunction[9])() {&MainWindow::open,&MainWindow::newFile,&MainWindow::save,
                                                     &MainWindow::saveAs,&MainWindow::cut,&MainWindow::copy,
-                                                    &MainWindow::paste,&MainWindow::redo,&MainWindow::undo,
-                                                    &MainWindow::bold,&MainWindow::italic,&MainWindow::underline};
-    void (MainWindow::*nonShortcutSlotFunction[6])() {&MainWindow::darkPlain,&MainWindow::darkPastel,
-                                                      &MainWindow::darkTwilight, &MainWindow::lightPlain,
-                                                      &MainWindow::lightPastel,&MainWindow::openSettings};
+                                                    &MainWindow::paste,&MainWindow::redo,&MainWindow::undo};
+    void (MainWindow::*nonShortcutSlotFunction[4])() {&MainWindow::darkPlain,&MainWindow::darkPastel,
+                                                      &MainWindow::darkTwilight,&MainWindow::openSettings};
 
     //initialise array of functors (function pointers)
 
-    for(int i{}; i < 12; ++i) {
+    for(int i{}; i < 9; ++i) {
         shortcutActions[i]->setShortcut(shortcuts[i]);
         connect(shortcutActions[i], &QAction::triggered, this, shortcutSlotFunction[i]);
     }
 
-    for(int i{}; i < 6; ++i) {
+    for(int i{}; i < 4; ++i) {
         connect(nonShortcutActions[i], &QAction::triggered, this, nonShortcutSlotFunction[i]);
     }
 
@@ -336,18 +306,11 @@ void MainWindow::createMenus() {
     edit->addAction(cutAct);
     edit->addAction(copyAct);
     edit->addAction(pasteAct);
-    edit->addSeparator();
-    edit->addAction(boldAct);
-    edit->addAction(italicAct);
-    edit->addAction(underlineAct);
 
     background = menuBar()->addMenu(tr("&Themes"));
-    lightMode = background->addMenu(tr("&Light"));
     darkMode = background->addMenu(tr("&Dark"));
     darkMode->addAction(plainDark);
     darkMode->addAction(twilightDark);
     darkMode->addAction(pastelDark);
-    lightMode->addAction(plainLight);
-    lightMode->addAction(pastelLight);
 }
 
