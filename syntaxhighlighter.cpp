@@ -30,6 +30,21 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter
     rule.format = quotation;
     highlightingRules.append(rule);
 
+    charQuotation.setForeground(Qt::yellow);
+    rule.pattern = QRegularExpression(QStringLiteral("'.*'"));
+    rule.format = quotation;
+    highlightingRules.append(rule);
+
+    number.setForeground(Qt::green);
+    rule.pattern = QRegularExpression(QStringLiteral("[0-9.]"));
+    rule.format = number;
+    highlightingRules.append(rule);
+
+    objectMethod.setForeground(Qt::magenta);
+    rule.pattern = QRegularExpression(QStringLiteral("\\b[A-Za-z0-9_]+(?=\\.)"));
+    rule.format = objectMethod;
+    highlightingRules.append(rule);
+
     function.setFontItalic(true);
     function.setForeground(Qt::red);
     rule.pattern = QRegularExpression(QStringLiteral("\\b[A-Za-z0-9_]+(?=\\()"));

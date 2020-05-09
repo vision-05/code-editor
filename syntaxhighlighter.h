@@ -29,6 +29,9 @@ private:
     QTextCharFormat singleLineComment;
     QTextCharFormat quotation;
     QTextCharFormat function;
+    QTextCharFormat charQuotation;
+    QTextCharFormat number;
+    QTextCharFormat objectMethod;
 };
 
 #endif // SYNTAXHIGHLIGHTER_H
