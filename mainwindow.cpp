@@ -286,7 +286,7 @@ void MainWindow::newTab() {
     windows.push_back(temp);
     int nextIndex = ui->tabWidget->count();
     ui->tabWidget->addTab(windows[nextIndex],tr("New Tab"));
-
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
 }
 
 int MainWindow::findEndOfName(QString path) {
