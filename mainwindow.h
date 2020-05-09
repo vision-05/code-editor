@@ -26,7 +26,8 @@
 #include <syntaxhighlighter.h>
 
 //make sure to add installer to set path for save data
-//add modified QSyntaxHighlighter class and also numbered lines
+//auto indent and auto complete, auto add brackets
+//add numbered lines
 //after all functionality implemented, make multitasking, then create windows compatible
 
 QT_BEGIN_NAMESPACE
@@ -69,11 +70,11 @@ private:
     void createMenus();
 
     Ui::MainWindow *ui;
-    QMenu* options; //TODO: right click context menu: edit menu
+    QMenu* options;
     QMenu* file;
     QMenu* edit;
     QMenu* color;
-    QMenu* font; //TODO: change font size, font type
+    QMenu* font;
     QMenu* background;
     QMenu* darkMode;
 
