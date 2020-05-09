@@ -16,7 +16,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter
         QStringLiteral("\\bfinally\\b"),QStringLiteral("\\bpass\\b"),QStringLiteral("\\bbreak\\b"),
         QStringLiteral("\\bcontinue\\b"),QStringLiteral("\\breturn\\b"),QStringLiteral("\\bdel\\b"),
         QStringLiteral("\\blambda\\b"),QStringLiteral("\\bNone\\b"),QStringLiteral("\\bnonlocal\\b"),
-        QStringLiteral("\\bwith\\b"),QStringLiteral("\\byield\\b")
+        QStringLiteral("\\bwith\\b"),QStringLiteral("\\byield\\b"),QStringLiteral("\\band\\b"),
+        QStringLiteral("\\bor\\b")
     };
     for(const QString& pattern : keywordPatterns) {
         rule.pattern = QRegularExpression(pattern);
