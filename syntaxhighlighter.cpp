@@ -25,16 +25,6 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter
         highlightingRules.append(rule);
     }
 
-    quotation.setForeground(Qt::yellow);
-    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
-    rule.format = quotation;
-    highlightingRules.append(rule);
-
-    charQuotation.setForeground(Qt::yellow);
-    rule.pattern = QRegularExpression(QStringLiteral("'.*'"));
-    rule.format = quotation;
-    highlightingRules.append(rule);
-
     number.setForeground(Qt::green);
     rule.pattern = QRegularExpression(QStringLiteral("[0-9.]"));
     rule.format = number;
@@ -49,6 +39,16 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter
     function.setForeground(Qt::red);
     rule.pattern = QRegularExpression(QStringLiteral("\\b[A-Za-z0-9_]+(?=\\()"));
     rule.format = function;
+    highlightingRules.append(rule);
+
+    quotation.setForeground(Qt::yellow);
+    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
+    rule.format = quotation;
+    highlightingRules.append(rule);
+
+    charQuotation.setForeground(Qt::yellow);
+    rule.pattern = QRegularExpression(QStringLiteral("'.*'"));
+    rule.format = quotation;
     highlightingRules.append(rule);
 
     singleLineComment.setForeground(Qt::cyan);
