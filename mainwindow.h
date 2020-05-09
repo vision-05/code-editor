@@ -43,6 +43,8 @@ public:
     ~MainWindow();
     void saveAsPlainText();
     void savePlainText();
+    int findEndOfName(QString path);
+    QString getTabName(QString path);
 
 private slots:
     void openSettings(); //default theme, text font and size

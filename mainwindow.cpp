@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget_2->setTabsClosable(true);
     ui->tabWidget_2->removeTab(0);
     ui->tabWidget_2->removeTab(0);
-    ui->tabWidget_2->addTab(textEdit, tr("Untitled"));
+    ui->tabWidget_2->addTab(edits[0], tr("Untitled"));
 
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, [=]() {
         MainWindow::search(ui->tabWidget->currentIndex());
@@ -46,7 +46,6 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
 
-    setWindowTitle(tr("Untitled"));
     setMinimumSize(160, 160);
     resize(1000, 610);
 
@@ -137,10 +136,16 @@ void MainWindow::saveAs() {
     out << text; //output the text
     file.flush();
     file.close();
-    this->setWindowTitle(fileName);
+    this->setWindowTitle(getTabName(fileName));
+    ui->tabWidget_2->setTabText(ui->tabWidget_2->currentIndex(),getTabName(fileName));
 }
 
 void MainWindow::open() {
+    if(ui->tabWidget_2->count() >= 6) {
+        QMessageBox::warning(this,"..","Too many tabs open");
+        return;
+    }
+
     QString fileName = QFileDialog::getOpenFileName(this, "Open the file"); //user input for file and location
     QFile file(fileName); //create a file with the name
     paths.push_back(fileName); //add the filepath to the vector of paths
@@ -155,7 +160,7 @@ void MainWindow::open() {
     file.close();
 
     edits.push_back(new QTextEdit); //create new text edit
-    ui->tabWidget_2->addTab(edits[ui->tabWidget_2->count()], tr("tab1")); //create a new tab with that edit
+    ui->tabWidget_2->addTab(edits[ui->tabWidget_2->count()], getTabName(fileName)); //create a new tab with that edit
     ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count() - 1); //set current tab
     edits[ui->tabWidget_2->currentIndex()]->setText(text); //set the textedit to the text of the file opened
 
@@ -165,13 +170,14 @@ void MainWindow::open() {
     edits[ui->tabWidget_2->currentIndex()]->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
 
     highlighter = new SyntaxHighlighter(edits[ui->tabWidget_2->currentIndex()]->document()); //set the highlighter to the document
-
-    //shrink tabs if more than 6
-
-    this->setWindowTitle(fileName);
 }
 
 void MainWindow::newFile() {
+    if(ui->tabWidget_2->count() >= 6) {
+        QMessageBox::warning(this,"..","Too many tabs open");
+        return;
+    }
+
     paths.push_back(tr("")); //add a new path
     edits.push_back(new QTextEdit); //add a new text edit
     ui->tabWidget_2->addTab(edits[ui->tabWidget_2->count()], tr("Untitled")); //add tab
@@ -183,9 +189,6 @@ void MainWindow::newFile() {
     edits[ui->tabWidget_2->currentIndex()]->setTabStopDistance(tabStop * metrics.QFontMetrics::horizontalAdvance(' '));
 
     highlighter = new SyntaxHighlighter(edits[ui->tabWidget_2->currentIndex()]->document()); //set highlighter to current doc
-    this->setWindowTitle(tr("Untitled_1"));
-
-    //shrink tabs if more than 6
 }
 
 void MainWindow::cut() {
@@ -274,11 +277,31 @@ void MainWindow::closeTab(int index) {
 }
 
 void MainWindow::newTab() {
+    if(ui->tabWidget->count() >= 6) {
+        QMessageBox::warning(this,"..","Too many tabs open");
+        return;
+    }
+
     QWebEngineView* temp = new QWebEngineView;
     windows.push_back(temp);
     int nextIndex = ui->tabWidget->count();
     ui->tabWidget->addTab(windows[nextIndex],tr("New Tab"));
 
+}
+
+int MainWindow::findEndOfName(QString path) {
+    for(int i{path.length() - 1}; i > 0; --i) {
+        if(path[i] == tr("/")) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+QString MainWindow::getTabName(QString path) {
+    int index = findEndOfName(path);
+    QString name = path.mid(index + 1, path.length() - index);
+    return name;
 }
 
 //CODE EDITOR
