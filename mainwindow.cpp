@@ -32,13 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
         MainWindow::search(ui->tabWidget->currentIndex());
     });
 
-    connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, [=]() {
-        MainWindow::closeTab(ui->tabWidget->currentIndex());
-    });
+    connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::closeTab);
 
-    connect(ui->tabWidget_2, &QTabWidget::tabCloseRequested, this, [=]() {
-        MainWindow::closeEditor(ui->tabWidget_2->currentIndex());
-    });
+    connect(ui->tabWidget_2, &QTabWidget::tabCloseRequested, this, &MainWindow::closeEditor);
 
     connect(ui->newTabButton, &QPushButton::released, this, &MainWindow::newTab);
     connect(ui->savePlainText, &QPushButton::released, this, &MainWindow::saveAsPlainText);
