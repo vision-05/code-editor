@@ -60,7 +60,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QString data[3] = {"1","2","3"};
 
-    QFile file(tr("/Users/tim/Desktop/saveData.sad"));
+    QString filename = QFileDialog::getOpenFileName(this, "Open the file");
+    sadPath = filename;
+    QFile file(filename);
     if(!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "..", "save data not open");
         return;
@@ -85,7 +87,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    QFile file(tr("/Users/tim/Desktop/saveData.sad"));
+    QString filename;
+    if(sadPath != tr("")){
+        filename = sadPath;
+    }
+    else {
+        filename = QFileDialog::getSaveFileName(this, "Open the file");
+    }
+    QFile file(filename);
     if(!file.open(QFile::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this, "..", "file not open");
         return;

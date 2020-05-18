@@ -113,5 +113,7 @@ private:
 
     QFont mainfont;
     const int tabStop = 4;
+
+    QString sadPath;
 };
 #endif // MAINWINDOW_H
